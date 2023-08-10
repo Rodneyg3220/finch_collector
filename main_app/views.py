@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Player
+from django.views.generic import ListView, DetailView
+from .models import Player, Shoe
 from .forms import FeedingForm
 
 
@@ -29,8 +30,10 @@ def players_index(request):
 
 def players_detail(request, player_id):
   player = Player.objects.get(id=player_id)
+  id_list = player.shoes.all().values_list('id')
+  shoes_player_doesnt_have = Shoe.objects.exclude(id__in=id_list)
   feeding_form = FeedingForm()
-  return render(request, 'players/detail.html', { 'player': player, 'feeding_form': feeding_form })
+  return render(request, 'players/detail.html', { 'player': player, 'feeding_form': feeding_form, 'shoes': shoes_player_doesnt_have })
 
 def add_feeding(request, player_id):
   # create a ModelForm instance using the data in request.POST
@@ -46,8 +49,8 @@ def add_feeding(request, player_id):
 
 class PlayerCreate(CreateView):
   model = Player
-  fields = '__all__'
-  success_url = '/players/{player_id}'
+  fields = ['name', 'position', 'age']
+  
 
 class PlayerUpdate(UpdateView):
   model = Player
@@ -57,3 +60,30 @@ class PlayerUpdate(UpdateView):
 class PlayerDelete(DeleteView):
   model = Player
   success_url = '/players'
+
+
+class ShoeList(ListView):
+  model = Shoe
+
+class ShoeDetail(DetailView):
+  model = Shoe
+
+class ShoeCreate(CreateView):
+  model = Shoe
+  fields = '__all__'
+
+class ShoeUpdate(UpdateView):
+  model = Shoe
+  fields = ['name', 'color']
+
+class ShoeDelete(DeleteView):
+  model = Shoe
+  success_url = '/shoes'
+
+def assoc_shoe(request, player_id, shoe_id):
+  Player.objects.get(id=player_id).shoes.add(shoe_id)
+  return redirect('detail', player_id=player_id)
+
+def unassoc_shoe(request, player_id, shoe_id):
+  Player.objects.get(id=player_id).shoes.remove(shoe_id)
+  return redirect('detail', player_id=player_id)

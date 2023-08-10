@@ -2,6 +2,7 @@
 {% block content %}
 
 <h1>Player Details</h1>
+
 <div class="row">
 <div class="col s6">
 <div class="card">
@@ -41,6 +42,51 @@
       </tbody>
     </table>
   </div>
+  <hr>
+<div class="row">
+  <div class="col s6">
+    <h3>{{ player.name }}'s Shoes</h3>
+    {% if player.players.count %}
+      {% for shoe in player.shoes.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              A <span style="color: {{ shoe.color }}">{{ shoe.color }}</span> {{ shoe.name }}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>No Shoes 😿</h5>
+    {% endif %}
+  </div>
+  <!-- Available toys will come after this line -->
+</div>
+</div>
+<!-- Available toys will come after this line -->
+<!-- New Markup Below -->
+<div class="col s6">
+  <h3>Available Shoes</h3>
+  {% if shoes.count %}
+    {% for shoe in shoes.all %}
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title">
+            A <span style="color: {{ shoe.color }}">{{ shoe.color }}</span> {{ shoe.name }}
+          </span>
+        </div>
+        <div class="card-action">
+          <form action="" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn">Add</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <h5>{{shoe.name}} Already Has All Shoes Available</h5>
+  {% endif %}
+</div>
 
   <script>
     const dateEl = document.getElementById('id_date');
